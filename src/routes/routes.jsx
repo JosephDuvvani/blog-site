@@ -2,6 +2,7 @@ import App from "../App";
 import Home from "../pages/home";
 import Login from "../pages/login";
 import Post from "../pages/post";
+import Signup from "../pages/signup";
 
 const routes = [
   {
@@ -12,6 +13,10 @@ const routes = [
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: '/auth/signup',
+        element: <Signup />
       },
       {
         path: '/auth/login',

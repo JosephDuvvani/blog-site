@@ -98,7 +98,7 @@ const Name = styled.span`
 
 const Header = () => {
     const {user, setUser} = useContext(AuthContext);
-    const cookies = new Cookies();
+    const cookies = new Cookies(null, {path: '/'});
     const token = cookies.get('jwt-refresh-blog');
 
     function logout () {
@@ -129,7 +129,7 @@ const Header = () => {
             {!token &&
                 <Buttons>
                     <Login to={'/auth/login'}>Login</Login>
-                    <Button>Signup</Button>
+                    <Button to={'/auth/signup'}>Signup</Button>
                 </Buttons>
             }
             {token && user &&
