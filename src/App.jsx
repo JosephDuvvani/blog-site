@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    const cookies = new Cookies();
+    const cookies = new Cookies(null, {path: '/'});
 
     const token = cookies.get('jwt-refresh-blog');
     

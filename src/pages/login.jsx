@@ -68,7 +68,7 @@ const Login = () => {
     const {user, setUser} = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const cookies = new Cookies();
+    const cookies = new Cookies(null, {path: '/'});
 
     useEffect(() => {
         if (cookies.get('jwt-refresh-blog')) navigate('/');

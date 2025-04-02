@@ -75,7 +75,7 @@ const Post = () => {
             })
         
         const checkComments = async () => {
-            const cookies = new Cookies();
+            const cookies = new Cookies(null, {path: '/'});
             let accessToken = cookies.get('jwt-access-blog') ;
             const refreshToken = cookies.get('jwt-refresh-blog');
             
