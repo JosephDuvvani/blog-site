@@ -65,9 +65,8 @@ const Error = styled.div`
 `;
 
 const Signup = () => {
-    const url = 'http://localhost:3000/auth/signup';
     const navigate = useNavigate();
-    const {user, setUser} = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
 
     const [error, setError] = useState();
 
@@ -77,8 +76,8 @@ const Signup = () => {
     const emailRef = useRef();
     const pwdRef = useRef();
 
-    function authenticate (e) {
-        e.preventDefault();        
+    function authenticate(e) {
+        e.preventDefault();
 
         const options = {
             method: 'POST',
@@ -92,13 +91,16 @@ const Signup = () => {
             })
         };
 
+        const apiUrl = import.meta.env.VITE_BLOG_API_URL;
+        const url = `${apiUrl}/auth/signup`;
+
         fetch(url, options)
             .then(res => res.json())
             .then(data => {
                 if (data.errors)
                     setError(data.errors[0]);
                 else {
-                    const cookies = new Cookies(null, {path: '/'});
+                    const cookies = new Cookies(null, { path: '/' });
 
                     cookies.set('jwt-access-blog', data.accessToken);
                     cookies.set('jwt-refresh-blog', data.refreshToken);
@@ -112,23 +114,23 @@ const Signup = () => {
 
     return (
         <>
-        {!user &&
-            <Wrapper>
-            <Form>
-                <Title>
-                    <h2>Signup</h2>
-                </Title>
-                <Fields>
-                    <input type="text" ref={usernameRef} name="username" aria-label="Your username" placeholder="Your username" />
-                    <input type="email" ref={emailRef} name="email" aria-label="Your email" placeholder="Your email" />
-                    <input type="password" ref={pwdRef} name="password" aria-label="Your password" placeholder="Your password" />
-                    <button onClick={authenticate}>Signup</button>
-                </Fields>
-                {error && 
-                    <Error>{error.msg}</Error>
-                }
-            </Form>
-        </Wrapper>}
+            {!user &&
+                <Wrapper>
+                    <Form>
+                        <Title>
+                            <h2>Signup</h2>
+                        </Title>
+                        <Fields>
+                            <input type="text" ref={usernameRef} name="username" aria-label="Your username" placeholder="Your username" />
+                            <input type="email" ref={emailRef} name="email" aria-label="Your email" placeholder="Your email" />
+                            <input type="password" ref={pwdRef} name="password" aria-label="Your password" placeholder="Your password" />
+                            <button onClick={authenticate}>Signup</button>
+                        </Fields>
+                        {error &&
+                            <Error>{error.msg}</Error>
+                        }
+                    </Form>
+                </Wrapper>}
         </>
     )
 };

@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
 
-const url = "http://localhost:3000/posts";
-
 const Article = styled.article`
     margin-bottom: 1rem;
     padding: 0 0 2rem;
@@ -48,6 +46,8 @@ const Home = () => {
   const [posts, setPosts] = useState();
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_BLOG_API_URL;
+    const url = `${apiUrl}/posts`;
     fetch(url)
       .then((res) => {
         if (res.status >= 400) throw new Error("Network response was not ok");

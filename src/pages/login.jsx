@@ -65,10 +65,10 @@ const Error = styled.div`
 `;
 
 const Login = () => {
-    const {user, setUser} = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const cookies = new Cookies(null, {path: '/'});
+    const cookies = new Cookies(null, { path: '/' });
 
     useEffect(() => {
         if (cookies.get('jwt-refresh-blog')) navigate('/');
@@ -79,9 +79,10 @@ const Login = () => {
     const emailRef = useRef();
     const pwdRef = useRef();
 
-    const url = 'http://localhost:3000/auth/login';
+    const apiUrl = import.meta.env.VITE_BLOG_API_URL;
+    const url = `${apiUrl}/auth/login`;
 
-    function authenticate (e) {
+    function authenticate(e) {
         e.preventDefault();
 
         const options = {
@@ -95,7 +96,7 @@ const Login = () => {
             })
 
         }
-        
+
         fetch(url, options)
             .then(res => {
                 return res.json();
@@ -106,36 +107,36 @@ const Login = () => {
                 } else {
                     const decoded = jwtDecode(data.accessToken);
 
-                setUser(decoded);
+                    setUser(decoded);
 
-                cookies.set('jwt-access-blog', data.accessToken, {
-                    expires: new Date(decoded.exp * 1000),
-                });
-                cookies.set('jwt-refresh-blog', data.refreshToken);
+                    cookies.set('jwt-access-blog', data.accessToken, {
+                        expires: new Date(decoded.exp * 1000),
+                    });
+                    cookies.set('jwt-refresh-blog', data.refreshToken);
 
-                navigate('/');
+                    navigate('/');
                 }
             })
     }
 
     return (
         <>
-        {!user &&
-            <Wrapper>
-            <Form>
-                <Title>
-                    <h2>Login</h2>
-                </Title>
-                <Fields>
-                    <input type="email" name="email" ref={emailRef} aria-label="Your email" placeholder="Your email" />
-                    <input type="password" name="password" ref={pwdRef} aria-label="Your password" placeholder="Your password" />
-                    <button onClick={authenticate}>Login</button>
-                </Fields>
-                {error && 
-                    <Error>{error.msg}</Error>
-                }
-            </Form>
-        </Wrapper>}
+            {!user &&
+                <Wrapper>
+                    <Form>
+                        <Title>
+                            <h2>Login</h2>
+                        </Title>
+                        <Fields>
+                            <input type="email" name="email" ref={emailRef} aria-label="Your email" placeholder="Your email" />
+                            <input type="password" name="password" ref={pwdRef} aria-label="Your password" placeholder="Your password" />
+                            <button onClick={authenticate}>Login</button>
+                        </Fields>
+                        {error &&
+                            <Error>{error.msg}</Error>
+                        }
+                    </Form>
+                </Wrapper>}
         </>
     )
 };

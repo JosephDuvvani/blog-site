@@ -97,11 +97,11 @@ const Name = styled.span`
 `;
 
 const Header = () => {
-    const {user, setUser} = useContext(AuthContext);
-    const cookies = new Cookies(null, {path: '/'});
+    const { user, setUser } = useContext(AuthContext);
+    const cookies = new Cookies(null, { path: '/' });
     const token = cookies.get('jwt-refresh-blog');
 
-    function logout () {
+    function logout() {
         const options = {
             method: 'POST',
             headers: {
@@ -112,7 +112,9 @@ const Header = () => {
             }),
         }
 
-        fetch('http://localhost:3000/auth/logout', options)
+        const apiUrl = import.meta.env.VITE_BLOG_API_URL;
+
+        fetch(`${apiUrl}/auth/logout`, options)
             .then(res => res.json())
             .then(data => {
                 setUser(null);

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { format } from "date-fns";
 import Cookies from "universal-cookie";
@@ -68,10 +68,11 @@ const Post = () => {
     const [comments, setComments] = useState();
     const [loading, setLoading] = useState(true);
     const { user } = useContext(AuthContext);
-    const location = useLocation();
+    const { postId } = useParams();
 
     useEffect(() => {
-        const url = 'http://localhost:3000' + location.pathname;
+        const apiUrl = import.meta.env.VITE_BLOG_API_URL;
+        const url = `${apiUrl}/posts/${postId}`;
 
         fetch(url)
             .then(res => {
@@ -82,7 +83,6 @@ const Post = () => {
             .then(data => {
                 setLoading(false);
                 const content = generateHTML(data.post.body, [StarterKit])
-                console.log(content)
                 const { title, createdAt, author } = data.post
                 setPost({
                     title,
@@ -98,7 +98,7 @@ const Post = () => {
             const refreshToken = cookies.get('jwt-refresh-blog');
 
             if (!accessToken && refreshToken) {
-                const tokenUrl = 'http://localhost:3000/auth/token'
+                const tokenUrl = `${apiUrl}/auth/token`
                 const data = await fetchToken(refreshToken, tokenUrl);
 
                 if (data.accessToken) {
