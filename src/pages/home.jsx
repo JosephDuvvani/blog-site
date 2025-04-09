@@ -21,7 +21,7 @@ const Title = styled.h1`
     color: hsl(215, 27%, 15%);
 `;
 
- const TitleLink = styled(Link)`
+const TitleLink = styled(Link)`
     color: inherit;
     text-decoration: none;
 
@@ -62,18 +62,24 @@ const Home = () => {
     <div>
       {posts && (
         <Main>
-            <Section>
-                {posts.map((post) => (
-                    <Article key={post.id}>
-                    <header className="post">
-                        <Title>
-                            <TitleLink to={`posts/${post.id}`}>{post.title}</TitleLink>
-                        </Title>
-                        <Date>{format(post.createdAt, "MMMM d, yyyy")}</Date>
-                    </header>
-                    </Article>
-                ))}
-            </Section>
+          <Section>
+            {posts.length === 0 &&
+              <h4>No posts found</h4>
+            }
+            {posts.length > 0 && posts.map((post) => (
+              <Article key={post.id}>
+                <header className="post">
+                  <Title>
+                    <TitleLink to={`posts/${post.id}`}>{post.title}</TitleLink>
+                  </Title>
+                  <Date>{format(post.createdAt, "MMMM d, yyyy")}</Date>
+                </header>
+                <p>
+                  {post.caption}
+                </p>
+              </Article>
+            ))}
+          </Section>
         </Main>
       )}
     </div>

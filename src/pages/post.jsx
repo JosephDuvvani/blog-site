@@ -1,12 +1,14 @@
-import {  useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Sections from "../components/post-sections";
 import styled from "styled-components";
 import { format } from "date-fns";
 import Cookies from "universal-cookie";
 import { fetchComments, fetchToken } from "../utils/utils";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../App";
+import { generateHTML } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import parse from "html-react-parser";
 
 const Article = styled.article`
     max-width: 50rem;
@@ -17,7 +19,7 @@ const Article = styled.article`
 const Title = styled.h1`
     font-size: 1.75rem;
     font-weight: 700;
-    margin-block: 0 .5rem;
+    margin-block: 3.5rem .5rem;
 `;
 
 const PostDate = styled.div`
@@ -53,14 +55,22 @@ const CommentDate = styled.div`
     color: #56bdbd;
 `;
 
-const Post = () => {
-  const [post, setPost] = useState();
-  const [comments, setComments] = useState();
-  const [loading, setLoading] = useState(true);
-  const {user} = useContext(AuthContext);
-  const location = useLocation();
+const Load = styled.div`
+    position: absolute;
+    inset: 0;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+`;
 
-  useEffect(() => {
+const Post = () => {
+    const [post, setPost] = useState();
+    const [comments, setComments] = useState();
+    const [loading, setLoading] = useState(true);
+    const { user } = useContext(AuthContext);
+    const location = useLocation();
+
+    useEffect(() => {
         const url = 'http://localhost:3000' + location.pathname;
 
         fetch(url)
@@ -71,14 +81,22 @@ const Post = () => {
             })
             .then(data => {
                 setLoading(false);
-                setPost(data.post);
+                const content = generateHTML(data.post.body, [StarterKit])
+                console.log(content)
+                const { title, createdAt, author } = data.post
+                setPost({
+                    title,
+                    createdAt,
+                    author,
+                    body: content
+                });
             })
-        
+
         const checkComments = async () => {
-            const cookies = new Cookies(null, {path: '/'});
-            let accessToken = cookies.get('jwt-access-blog') ;
+            const cookies = new Cookies(null, { path: '/' });
+            let accessToken = cookies.get('jwt-access-blog');
             const refreshToken = cookies.get('jwt-refresh-blog');
-            
+
             if (!accessToken && refreshToken) {
                 const tokenUrl = 'http://localhost:3000/auth/token'
                 const data = await fetchToken(refreshToken, tokenUrl);
@@ -104,41 +122,43 @@ const Post = () => {
             }
         }
         checkComments();
-  }, [])
+    }, [])
 
-  if (loading) return <div>Loading...</div>;
+    if (loading) return <Load>Loading...</Load>;
 
-  return (
-    <>
-      {post && 
-        <Article>
-            <header>
-            <Title>{post.title}</Title>
-            <PostDate>{format(post.createdAt, 'MMMM d, yyyy')}</PostDate>
-            </header>
-            <Main>
-                <Sections sections={post.content.sections} />
-                {comments && user &&
-                    <CommentSection>
-                        <h4>Comments</h4>
-                        <Comments>
-                            {
-                                comments.map(comment => (
-                                    <Comment key={comment.id}>
-                                        <div>{comment.content.data}</div>
-                                        <CommentDate>{format(comment.createdAt, 'MMM d, yyyy @ HH:mm')}</CommentDate>
-                                        <div>{comment.author.username}</div>
-                                    </Comment>
-                                ))
-                            }
-                        </Comments>
-                    </CommentSection>
-                }
-            </Main>
-        </Article>
-      }
-    </>
-  );
+    return (
+        <>
+            {post &&
+                <Article>
+                    <header>
+                        <PostDate>{format(post.createdAt, 'MMMM d, yyyy')}</PostDate>
+                        <Title>{post.title}</Title>
+                    </header>
+                    <Main>
+                        <div>
+                            {parse(post.body)}
+                        </div>
+                        {comments && user &&
+                            <CommentSection>
+                                <h4>Comments</h4>
+                                <Comments>
+                                    {
+                                        comments.map(comment => (
+                                            <Comment key={comment.id}>
+                                                <div>{comment.content.data}</div>
+                                                <CommentDate>{format(comment.createdAt, 'MMM d, yyyy @ HH:mm')}</CommentDate>
+                                                <div>{comment.author.username}</div>
+                                            </Comment>
+                                        ))
+                                    }
+                                </Comments>
+                            </CommentSection>
+                        }
+                    </Main>
+                </Article>
+            }
+        </>
+    );
 };
 
 export default Post;
